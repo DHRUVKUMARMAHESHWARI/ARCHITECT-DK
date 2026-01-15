@@ -41,6 +41,62 @@ const App: React.FC = () => {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   
+  // Security: Blur State
+  const [isBlurred, setIsBlurred] = useState(false);
+
+  useEffect(() => {
+    // 1. Block Context Menu (Inspect Element)
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    // 2. Block DevTools Shortcuts & Detect Screenshot Attempts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Block DevTools (F12, Ctrl+Shift+I/J/C, Cmd+Option+I/J/C)
+      if (
+        e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+        (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'j' || e.key === 'c')) ||
+        (e.ctrlKey && e.key === 'u')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+
+      // Detect Screenshot Keys (Mac Cmd+Shift+3/4/5, Windows PrtSc)
+      if (
+        e.key === 'PrintScreen' || 
+        (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5'))
+      ) {
+        setIsBlurred(true);
+        // Keep blurred briefly to ruin the screenshot
+        setTimeout(() => setIsBlurred(false), 2000);
+      }
+    };
+
+    // 3. Blur on Window Focus Loss (Snipping Tools, Tab Switching)
+    const handleWindowBlur = () => {
+      setIsBlurred(true);
+    };
+
+    const handleWindowFocus = () => {
+      setIsBlurred(false);
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, []);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -512,7 +568,7 @@ const App: React.FC = () => {
 
             {/* Resume Editor View */}
             <div className="lg:w-2/3 flex flex-col items-center">
-               <div className={`template-${selectedTemplate} w-full`}>
+               <div className={`template-${selectedTemplate} w-full ${isBlurred ? 'security-blur' : ''}`}>
                  <div className="resume-page-container">
                     <RichEditor content={editedHtml} onChange={setEditedHtml} />
                  </div>

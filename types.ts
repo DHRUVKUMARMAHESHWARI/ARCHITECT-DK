@@ -27,7 +27,9 @@ export type TemplateId =
   | 'geometric-eng'
   | 'executive-gold'
   | 'midnight-navy'
-  | 'soft-minimal';
+  | 'soft-minimal'
+  | 'startup-clean'
+  | 'deloitte';
 
 export type AppState = 'IDLE' | 'UPLOADING' | 'PROCESSING' | 'EDITING' | 'ANALYZING' | 'IMPROVING';
 

@@ -117,12 +117,86 @@
         .template-jacqueline .editor-content h1 { color: var(--purple-accent); font-family: 'Montserrat', sans-serif; font-size: 28pt !important; text-align: center; text-transform: uppercase; margin-bottom: 10pt; }
         .template-jacqueline .editor-content h2 { color: var(--purple-accent); font-size: 11pt; text-transform: uppercase; border-bottom: 1pt solid #ddd; margin-top: 20pt; padding-bottom: 4pt; }
 
-        /* Security Blur */
+        /* TEMPLATE: STARTUP CLEAN */
+        .template-startup-clean .editor-content { font-family: 'Montserrat', sans-serif; color: #334155; }
+        .template-startup-clean h1 { color: #0ea5e9; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; font-size: 28pt !important; }
+        .template-startup-clean h2 { color: #fff; background: #0ea5e9; font-size: 10pt; font-weight: 700; padding: 4pt 12pt; border-radius: 20px; display: inline-block; margin-top: 18pt; text-transform: uppercase; letter-spacing: 1px; }
+        .template-startup-clean h3 { color: #0f172a; font-weight: 700; margin-top: 8pt; }
+
+    /* Security Blur */
         .security-blur {
             filter: blur(15px) !important;
             user-select: none !important;
             pointer-events: none !important;
             transition: filter 0.3s ease;
+        }
+
+        /* TEMPLATE: DELOITTE RESUME TEMP */
+        .template-deloitte .resume-page-container {
+            position: relative;
+        }
+        .template-deloitte .deloitte-photo-container {
+            position: absolute;
+            top: 0.5in;
+            right: 0.6in;
+            width: 1.3in; 
+            height: 1.6in;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .template-deloitte .deloitte-photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .template-deloitte .editor-content {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+        }
+        .template-deloitte h1 {
+            font-size: 22pt !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #000;
+            margin-right: 1.5in; /* Space for photo */
+            margin-bottom: 5pt;
+            letter-spacing: 0.5pt;
+        }
+        .template-deloitte .editor-content p {
+            font-size: 10pt;
+            margin-right: 1.5in; /* Contact info space */
+        }
+        /* Except for regular paragraphs in body */
+        .template-deloitte .editor-content h2 ~ p, 
+        .template-deloitte .editor-content ul ~ p {
+            margin-right: 0;
+        }
+        
+        .template-deloitte h2 {
+            background-color: #e5e7eb; /* Light grey bar */
+            color: #000;
+            font-size: 11pt;
+            font-weight: 700;
+            padding: 4pt 8pt;
+            border: 1px solid #9ca3af;
+            margin-top: 15pt;
+            margin-bottom: 8pt;
+            text-transform: capitalize; 
+        }
+        .template-deloitte h3 {
+            font-weight: 700;
+            font-size: 10.5pt;
+            margin-top: 8pt;
+            border-bottom: 0.5pt solid #e5e7eb;
+            padding-bottom: 2pt;
+            margin-bottom: 4pt;
+        }
+        .template-deloitte ul {
+            margin-top: 2pt;
         }
     </style>
 <script type="importmap">

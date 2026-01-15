@@ -42,8 +42,8 @@ export const getMe = async () => {
   return response.data.data;
 };
 
-export const trackDownload = async () => {
-  const response = await api.post('/auth/track-download');
+export const trackDownload = async (templateId?: string) => {
+  const response = await api.post('/auth/track-download', { templateId });
   return response.data;
 };
 

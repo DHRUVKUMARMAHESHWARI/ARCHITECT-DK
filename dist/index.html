@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS-Architect | Professional Resume Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=IBM+Plex+Mono:wght@400;500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple-accent: #8e7cc3;
+            --gold-accent: #c5a059;
+            --navy-accent: #1e293b;
+            --text-dark: #1a1a1a;
+            --text-grey: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: var(--text-dark);
+        }
+
+        /* Animations */
+        @keyframes zoom-in {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-in {
+          animation: zoom-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Resume Page Container (Standard A4) */
+        .resume-page-container {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 0.5in 0.6in;
+            min-height: 297mm;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* General Editor Helpers */
+        .editor-content:focus { outline: none; }
+        .editor-content p { font-size: 9.5pt; line-height: 1.4; margin-bottom: 4pt; }
+        .editor-content a { color: #2563eb; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; cursor: pointer !important; }
+
+        /* TEMPLATE: EXECUTIVE CLASSIC (SOURABH STYLE) */
+        .template-sourabh .editor-content { font-family: 'Inter', sans-serif; color: #000; }
+        .template-sourabh .header-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10pt; }
+        .template-sourabh .header-left h1 { font-size: 20pt !important; font-weight: 700; margin: 0; line-height: 1.1; }
+        .template-sourabh .header-left p { font-size: 9.5pt; margin: 2pt 0 0 0; color: #000; }
+        .template-sourabh .header-right { text-align: right; font-size: 9.5pt; line-height: 1.3; }
+        .template-sourabh .editor-content h2 { font-size: 11pt; font-weight: 600; text-transform: uppercase; border-bottom: 0.5pt solid #000; margin-top: 15pt; margin-bottom: 6pt; padding-bottom: 1pt; letter-spacing: 0.5pt; }
+        .template-sourabh .editor-content h3 { font-size: 10pt; font-weight: 700; display: flex; justify-content: space-between; margin-top: 8pt; margin-bottom: 1pt; }
+        .template-sourabh .editor-content .role-line { display: flex; justify-content: space-between; font-style: italic; font-size: 9.5pt; margin-bottom: 4pt; }
+        .template-sourabh .editor-content ul { list-style-type: disc; padding-left: 15pt; margin-top: 2pt; }
+        .template-sourabh .editor-content li { font-size: 9.5pt; line-height: 1.4; margin-bottom: 2pt; }
+
+        /* TEMPLATE: MODERN MONO (THE DEVELOPER) */
+        .template-modern-mono .editor-content { font-family: 'IBM Plex Mono', monospace; font-size: 9pt; color: #1e293b; }
+        .template-modern-mono .header-grid { border: 1px solid #e2e8f0; padding: 15pt; margin-bottom: 20pt; }
+        .template-modern-mono h1 { font-size: 18pt !important; font-weight: 600; color: #0f172a; }
+        .template-modern-mono h2 { background: #f1f5f9; padding: 4pt 8pt; font-size: 10pt; margin-top: 15pt; border-left: 3pt solid #0f172a; }
+
+        /* TEMPLATE: THE EDITORIAL (THE CREATIVE) */
+        .template-editorial .editor-content { font-family: 'Playfair Display', serif; }
+        .template-editorial h1 { font-size: 32pt !important; text-align: center; border-bottom: 4pt double #000; padding-bottom: 10pt; margin-bottom: 20pt; font-style: italic; }
+        .template-editorial h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12pt; text-align: right; color: #991b1b; border-bottom: 1px solid #991b1b; margin-top: 20pt; }
+
+        /* TEMPLATE: THE BRUTALIST (THE ARCHITECT) */
+        .template-brutalist .editor-content { font-family: 'Montserrat', sans-serif; }
+        .template-brutalist h1 { font-size: 40pt !important; font-weight: 900; letter-spacing: -2pt; line-height: 0.9; margin-bottom: 20pt; }
+        .template-brutalist h2 { background: #000; color: #fff; display: inline-block; padding: 4pt 20pt; transform: skewX(-10deg); margin-top: 20pt; font-weight: 900; }
+        .template-brutalist h3 { border-left: 5pt solid #000; padding-left: 10pt; margin-top: 15pt; }
+
+        /* TEMPLATE: NEON TECH (THE FUTURIST) */
+        .template-neon-tech .editor-content { color: #334155; }
+        .template-neon-tech h1 { color: #0d9488; font-weight: 800; border-left: 10pt solid #0d9488; padding-left: 15pt; }
+        .template-neon-tech h2 { color: #0d9488; font-size: 10pt; letter-spacing: 2pt; text-transform: uppercase; border-bottom: 2pt solid #f0fdfa; margin-top: 20pt; }
+
+        /* TEMPLATE: SWISS GRID (THE DESIGNER) */
+        .template-swiss-grid .editor-content { font-family: 'Inter', sans-serif; font-weight: 400; line-height: 1.5; }
+        .template-swiss-grid h1 { font-size: 24pt !important; font-weight: 300; margin-bottom: 30pt; }
+        .template-swiss-grid h2 { font-size: 8pt; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1pt; margin-bottom: 10pt; margin-top: 30pt; }
+
+        /* TEMPLATE: ACADEMIC VINTAGE (THE SCHOLAR) */
+        .template-academic-vintage .editor-content { font-family: 'Courier New', Courier, monospace; color: #27272a; }
+        .template-academic-vintage h1 { font-size: 18pt !important; text-decoration: underline; text-align: center; }
+        .template-academic-vintage h2 { font-size: 12pt; text-transform: uppercase; text-align: center; margin-top: 20pt; }
+        .template-academic-vintage h2::before, .template-academic-vintage h2::after { content: " --- "; }
+
+        /* TEMPLATE: GEOMETRIC ENG (THE ENGINEER) */
+        .template-geometric-eng h2 { background: linear-gradient(90deg, #1e3a8a 0%, transparent 100%); color: white; padding: 3pt 10pt; clip-path: polygon(0 0, 95% 0, 100% 100%, 0 100%); margin-top: 20pt; }
+        .template-geometric-eng h3 { color: #1e3a8a; }
+
+        /* TEMPLATE: EXECUTIVE GOLD (THE PARTNER) */
+        .template-executive-gold .editor-content { font-family: 'Inter', sans-serif; color: #0f172a; }
+        .template-executive-gold h1 { color: #1e293b; font-weight: 800; }
+        .template-executive-gold h2 { color: #854d0e; border-bottom: 1pt solid #eab308; margin-top: 20pt; font-family: 'Playfair Display', serif; font-style: italic; }
+
+        /* TEMPLATE: MIDNIGHT NAVY (THE CORPORATE) */
+        .template-midnight-navy h1 { color: #1e1b4b; font-weight: 800; }
+        .template-midnight-navy h2 { color: #fff; background: #1e1b4b; padding: 5pt 15pt; margin-top: 20pt; }
+
+        /* TEMPLATE: SOFT MINIMAL (THE MINIMALIST PLUS) */
+        .template-soft-minimal .editor-content { font-family: 'Inter', sans-serif; color: #475569; }
+        .template-soft-minimal h1 { color: #db2777; font-weight: 700; text-align: center; }
+        .template-soft-minimal h2 { color: #be185d; font-size: 10pt; text-transform: uppercase; background: #fdf2f8; display: inline-block; padding: 2pt 12pt; border-radius: 9999px; margin-top: 20pt; }
+
+        /* TEMPLATE: JACQUELINE (PURPLE) */
+        .template-jacqueline .editor-content h1 { color: var(--purple-accent); font-family: 'Montserrat', sans-serif; font-size: 28pt !important; text-align: center; text-transform: uppercase; margin-bottom: 10pt; }
+        .template-jacqueline .editor-content h2 { color: var(--purple-accent); font-size: 11pt; text-transform: uppercase; border-bottom: 1pt solid #ddd; margin-top: 20pt; padding-bottom: 4pt; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@google/genai": "https://esm.sh/@google/genai@^1.36.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "ATS-Architect - Professional Resume Builder",
+  "description": "High-precision AI tool to convert resume images into ATS-optimized digital formats with professional formatting and feedback.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

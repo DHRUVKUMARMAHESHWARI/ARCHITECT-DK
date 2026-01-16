@@ -8,6 +8,7 @@ import PremiumModal from './components/PremiumModal';
 import AdminDashboard from './components/AdminDashboard';
 import DonationModal from './components/DonationModal';
 import { trackDownload, upgradeToPremium } from './services/api';
+import HeroAnimation from './components/HeroAnimation';
 
 const TEMPLATES: {id: TemplateId, name: string, description: string, preview: string}[] = [
   { id: 'sourabh', name: 'Executive Classic', description: 'Horizontal rules & split header. Highly professional.', preview: 'border-t-4 border-slate-900' },
@@ -565,50 +566,58 @@ const App: React.FC = () => {
       <main className="flex-grow max-w-7xl mx-auto w-full px-8 pb-8 pt-32 flex flex-col">
         {state === 'IDLE' && (
           <div className="flex flex-col gap-12 py-6 animate-in">
-            <div className="max-w-4xl">
-              <h1 className="text-[5rem] font-black text-slate-900 tracking-tighter leading-[0.85] mb-8">
-                Your Career, <br /><span className="text-slate-300">Perfectly Re-Architected.</span>
-              </h1>
-              <p className="text-2xl text-slate-500 font-medium max-w-2xl leading-relaxed">
-                Upload your old resume image or PDF. We'll extract your history and let you switch between premium templates in one click.
-              </p>
+             <div className="md:grid md:grid-cols-2 gap-12 items-center">
+                
+                {/* LEFT: Text Content */}
+                <div className="max-w-2xl animate-fade-up" style={{animationDelay: '0.1s'}}>
+                  <h1 className="text-[5rem] font-black text-slate-900 tracking-tighter leading-[0.85] mb-8">
+                    Your Career, <br /><span className="text-slate-300">Perfectly Re-Architected.</span>
+                  </h1>
+                  <p className="text-2xl text-slate-500 font-medium max-w-lg leading-relaxed mb-8">
+                    Upload your old resume image or PDF. We'll extract your history and let you switch between premium templates in one click.
+                  </p>
 
-              {/* Minimalist How It Works */}
-              <div className="flex gap-8 mt-4">
-                 <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 01</span>
-                    <span className="font-bold text-slate-800 text-sm">Upload Old Resume</span>
-                 </div>
-                 <div className="w-px bg-slate-200"></div>
-                 <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 02</span>
-                    <span className="font-bold text-slate-800 text-sm">AI Architecting</span>
-                 </div>
-                 <div className="w-px bg-slate-200"></div>
-                 <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 03</span>
-                    <span className="font-bold text-slate-800 text-sm">Select & Download</span>
-                 </div>
-              </div>
+                  <div className="flex gap-8 mt-4">
+                     <div className="flex flex-col gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 01</span>
+                        <span className="font-bold text-slate-800 text-sm">Upload Old Resume</span>
+                     </div>
+                     <div className="w-px bg-slate-200"></div>
+                     <div className="flex flex-col gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 02</span>
+                        <span className="font-bold text-slate-800 text-sm">AI Architecting</span>
+                     </div>
+                     <div className="w-px bg-slate-200"></div>
+                     <div className="flex flex-col gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 03</span>
+                        <span className="font-bold text-slate-800 text-sm">Select & Download</span>
+                     </div>
+                  </div>
 
-               {/* Value Proposition / Free vs Premium */}
-              <div className="grid grid-cols-2 gap-4 max-w-lg mt-8">
-                 <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-2">Free Access</h3>
-                    <ul className="space-y-2">
-                       <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>Basic Templates</li>
-                       <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2 relative overflow-hidden"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>1 Download / Day</li>
-                    </ul>
-                 </div>
-                 <div className="p-6 bg-slate-900 rounded-2xl shadow-xl shadow-slate-200">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-white mb-2">Architect Premium</h3>
-                    <ul className="space-y-2">
-                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Deloitte & Executive Templates</li>
-                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited AI Reordering</li>
-                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited Downloads</li>
-                    </ul>
-                 </div>
-              </div>
+                   {/* Value Proposition / Free vs Premium */}
+                  <div className="grid grid-cols-2 gap-4 max-w-lg mt-8">
+                     <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm transition-all hover:scale-105 duration-300">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-2">Free Access</h3>
+                        <ul className="space-y-2">
+                           <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>Basic Templates</li>
+                           <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2 relative overflow-hidden"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>1 Download / Day</li>
+                        </ul>
+                     </div>
+                     <div className="p-6 bg-slate-900 rounded-2xl shadow-xl shadow-slate-200 transition-all hover:scale-105 duration-300">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white mb-2">Architect Premium</h3>
+                        <ul className="space-y-2">
+                           <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Deloitte & Executive Templates</li>
+                           <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited AI Reordering</li>
+                           <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited Downloads</li>
+                        </ul>
+                     </div>
+                  </div>
+                </div>
+
+                {/* RIGHT: Hero Animation */}
+                <div className="hidden md:flex justify-end pr-8 animate-fade-up" style={{animationDelay: '0.3s'}}>
+                   <HeroAnimation />
+                </div>
             </div>
 
             <div className="grid lg:grid-cols-12 gap-12">
@@ -646,10 +655,12 @@ const App: React.FC = () => {
                     {inputMode === 'file' ? (
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className="border-4 border-dashed border-slate-100 rounded-[2.5rem] py-24 bg-slate-50/30 hover:bg-white hover:border-slate-300 transition-all cursor-pointer text-center group"
+                        className="border-4 border-dashed border-slate-100 rounded-[2.5rem] py-24 bg-slate-50/30 hover:bg-white hover:border-indigo-300 transition-all cursor-pointer text-center group hover:scale-[1.01] duration-500 relative overflow-hidden"
                       >
-                        <div className="w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-400 group-hover:text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-indigo-50/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        
+                        <div className="w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-400 group-hover:text-indigo-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         </div>
                         <p className="text-slate-900 font-black text-2xl tracking-tighter uppercase">Drop Old Resume Here</p>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mt-3">PDF, Image, or Photo accepted</p>
@@ -677,7 +688,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Template Gallery Grid - Full Width */}
-            <div className="mt-24 mb-20">
+            <div className="mt-24 mb-20 animate-fade-up" style={{animationDelay: '0.5s'}}>
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 px-4 gap-4">
                  <div>
                     <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Architecture Blueprints</h3>

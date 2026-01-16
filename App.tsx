@@ -376,59 +376,61 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <nav className="h-20 bg-white border-b border-slate-200 sticky top-0 z-[100] flex items-center px-8 justify-between">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl bg-white/80 backdrop-blur-md border border-white/40 shadow-xl shadow-slate-200/50 rounded-full z-[100] flex items-center px-6 py-3 justify-between transition-all hover:scale-[1.01]">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setState('IDLE')}>
-          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black">A</div>
-          <span className="font-black text-lg tracking-tighter uppercase italic text-slate-900">ATS Architect</span>
+          <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-black shadow-lg shadow-slate-900/30">A</div>
+          <span className="font-black text-lg tracking-tighter uppercase italic text-slate-900 hidden sm:block">ATS Architect</span>
         </div>
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
                {user.email === 'dhruv@gmail.com' && (
                  <button 
                   onClick={() => setShowAdminDashboard(true)}
-                  className="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-colors"
                  >
-                   Admin Panel
+                   Admin
                  </button>
                )}
                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold text-slate-900">{user.name}</p>
-                  <div className="flex items-center justify-end gap-1">
-                    {user.isPremium && <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Premium</span>}
-                    <p className="text-[10px] font-medium text-slate-400">{user.email}</p>
+                  <div className="flex items-center justify-end gap-2">
+                    <p className="text-xs font-bold text-slate-900">{user.name}</p>
+                    {user.isPremium && <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" title="Premium Active"></span>}
                   </div>
                </div>
                <button 
                 onClick={handleLogout}
-                className="text-xs font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest"
+                className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-200 transition-all"
+                title="Logout"
                >
-                 Logout
+                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                </button>
             </div>
           ) : (
             <button 
               onClick={() => setShowAuthModal(true)}
-              className="text-[10px] font-black uppercase text-slate-900 bg-slate-100 hover:bg-slate-200 px-5 py-2 rounded-full transition-all tracking-widest"
+              className="text-[10px] font-black uppercase text-white bg-slate-900 hover:bg-slate-800 px-6 py-3 rounded-full transition-all tracking-widest shadow-lg shadow-slate-900/20 hover:scale-105 active:scale-95"
             >
-              Sign In
+              Start Architecting
             </button>
           )}
 
           {state === 'EDITING' && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
             <button 
               onClick={() => setState('IDLE')}
-              className="px-5 py-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 border border-slate-100 rounded-full transition-all tracking-widest"
+              className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-all"
+              title="New Upload"
             >
-              New Upload
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             </button>
             <button 
               onClick={handleExportPDF}
-              className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200 active:scale-95"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center gap-2"
             >
-              Print to PDF
+              <span>Download PDF</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
             </button>
           </div>
         )}
@@ -445,6 +447,43 @@ const App: React.FC = () => {
               <p className="text-2xl text-slate-500 font-medium max-w-2xl leading-relaxed">
                 Upload your old resume image or PDF. We'll extract your history and let you switch between premium templates in one click.
               </p>
+
+              {/* Minimalist How It Works */}
+              <div className="flex gap-8 mt-4">
+                 <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 01</span>
+                    <span className="font-bold text-slate-800 text-sm">Upload Old Resume</span>
+                 </div>
+                 <div className="w-px bg-slate-200"></div>
+                 <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 02</span>
+                    <span className="font-bold text-slate-800 text-sm">AI Architecting</span>
+                 </div>
+                 <div className="w-px bg-slate-200"></div>
+                 <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 03</span>
+                    <span className="font-bold text-slate-800 text-sm">Select & Download</span>
+                 </div>
+              </div>
+
+               {/* Value Proposition / Free vs Premium */}
+              <div className="grid grid-cols-2 gap-4 max-w-lg mt-8">
+                 <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-2">Free Access</h3>
+                    <ul className="space-y-2">
+                       <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>Basic Templates</li>
+                       <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2 relative overflow-hidden"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>1 Download / Day</li>
+                    </ul>
+                 </div>
+                 <div className="p-6 bg-slate-900 rounded-2xl shadow-xl shadow-slate-200">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-white mb-2">Architect Premium</h3>
+                    <ul className="space-y-2">
+                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Deloitte & Executive Templates</li>
+                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited AI Reordering</li>
+                       <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Unlimited Downloads</li>
+                    </ul>
+                 </div>
+              </div>
             </div>
 
             <div className="grid lg:grid-cols-12 gap-12">
@@ -459,56 +498,7 @@ const App: React.FC = () => {
                   />
                 </div>
 
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm max-h-[500px] overflow-y-auto" style={{scrollbarWidth: 'none'}}>
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 sticky top-0 bg-white py-2">2. Select Starting Template</h3>
-                  <div className="grid gap-3">
-                    {TEMPLATES.map(t => (
-                      <button 
-                        key={t.id}
-                        onClick={() => setSelectedTemplate(t.id)}
-                        className={`p-5 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${
-                          selectedTemplate === t.id 
-                            ? t.id === 'deloitte' 
-                              ? 'border-green-600 bg-green-50 shadow-xl translate-x-2 ring-1 ring-green-200'
-                              : 'border-slate-900 bg-white shadow-xl translate-x-2' 
-                            : t.id === 'deloitte'
-                              ? 'border-green-100 bg-white hover:border-green-300'
-                              : 'border-slate-50 bg-white/50 hover:border-slate-200'
-                        }`}
-                      >
-                        <div className={`w-1 h-8 rounded-full ${t.preview}`} />
-                        <div>
-                          <div className="font-black text-[10px] text-slate-900 uppercase tracking-tight">{t.name}</div>
-                          <p className="text-[9px] text-slate-400 font-bold uppercase truncate max-w-[200px]">{t.description}</p>
-                          
-                          {/* Deloitte Photo Upload in IDLE */}
-                          {t.id === 'deloitte' && selectedTemplate === 'deloitte' && (
-                             <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                                <input 
-                                  ref={profileImageInputRef}
-                                  type="file" 
-                                  accept="image/*" 
-                                  className="hidden" 
-                                  onChange={handleProfileImageChange} 
-                                />
-                                <div className="flex gap-2 items-center">
-                                  <button
-                                      onClick={() => profileImageInputRef.current?.click()}
-                                      className="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-green-200 transition-colors"
-                                  >
-                                      {profileImage ? 'Change Photo' : 'Upload Photo'}
-                                  </button>
-                                  {profileImage && (
-                                     <span className="text-[9px] font-bold text-green-600">✓ Added</span>
-                                  )}
-                                </div>
-                             </div>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+
               </div>
 
               <div className="lg:col-span-7">
@@ -558,6 +548,66 @@ const App: React.FC = () => {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Template Gallery Grid - Full Width */}
+            <div className="mt-24 mb-20">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 px-4 gap-4">
+                 <div>
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Architecture Blueprints</h3>
+                    <p className="text-[10px] text-slate-400 font-medium max-w-lg leading-relaxed">
+                      *Our templates are architected based on official company references. Please verify against your target role's specific requirements, as we cannot guarantee selection outcomes.
+                    </p>
+                 </div>
+                 <span className="text-[10px] font-bold text-slate-300 bg-slate-100 px-3 py-1 rounded-full">{TEMPLATES.length} Styles Available</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {TEMPLATES.map(t => (
+                      <button 
+                        key={t.id}
+                        onClick={() => setSelectedTemplate(t.id)}
+                        className={`group relative p-8 rounded-[2rem] border-2 transition-all text-left flex flex-col gap-6 overflow-hidden min-h-[220px] ${
+                          selectedTemplate === t.id 
+                            ? t.id === 'deloitte' ? 'border-green-500 bg-green-50/50 shadow-2xl scale-105 ring-4 ring-green-100 z-10' : 'border-slate-900 bg-white shadow-2xl scale-105 z-10' 
+                            : 'border-white bg-white hover:border-slate-200 hover:shadow-xl hover:-translate-y-1'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                           <div className={`w-12 h-12 rounded-2xl ${t.preview} shadow-lg group-hover:scale-110 transition-transform`} />
+                           {selectedTemplate === t.id && (
+                             <div className="w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center text-white text-[10px]">✓</div>
+                           )}
+                        </div>
+
+                        <div>
+                          <div className="font-black text-sm text-slate-900 uppercase tracking-tight mb-2 group-hover:text-indigo-600 transition-colors">{t.name}</div>
+                          <p className="text-[10px] text-slate-400 font-bold leading-relaxed line-clamp-2">{t.description}</p>
+                        </div>
+
+                        {/* Deloitte Image Action in Grid */}
+                        {t.id === 'deloitte' && selectedTemplate === 'deloitte' && (
+                             <div className="mt-auto pt-4 border-t border-green-200/50 w-full animate-in fade-in slide-in-from-bottom-2" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex gap-2 items-center justify-between bg-white/60 p-2 rounded-xl border border-green-100">
+                                  <button
+                                      onClick={() => profileImageInputRef.current?.click()}
+                                      className="flex-1 bg-green-500 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-green-600 transition-colors shadow-lg shadow-green-200"
+                                  >
+                                      {profileImage ? 'Update' : 'Upload Photo'}
+                                  </button>
+                                  <input 
+                                    ref={profileImageInputRef}
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={handleProfileImageChange} 
+                                  />
+                                </div>
+                             </div>
+                          )}
+                      </button>
+                    ))}
               </div>
             </div>
           </div>
@@ -699,7 +749,12 @@ const App: React.FC = () => {
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
                >
-                 <div className="resume-page-container">
+                 <div className="resume-page-container relative">
+                    {/* Visual Page Break Marker (Approx A4 bottom) */}
+                    <div className="absolute top-[11.7in] left-0 right-0 border-b-2 border-dashed border-red-200 flex justify-center pointer-events-none z-50 opacity-50">
+                        <span className="bg-slate-50 px-2 text-[9px] font-bold text-red-300 uppercase tracking-widest -mb-2">Page 1 End</span>
+                    </div>
+
                     {selectedTemplate === 'deloitte' && profileImage && (
                       <div 
                         className="deloitte-photo-container cursor-move hover:ring-2 ring-green-400 transition-shadow"

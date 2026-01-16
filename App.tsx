@@ -48,8 +48,12 @@ const App: React.FC = () => {
   const [isBlurred, setIsBlurred] = useState(false);
 
   // New: Profile Image State for Premium Templated (e.g. Deloitte)
+  // New: Profile Image State for Premium Templated (e.g. Deloitte)
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     // 1. Block Context Menu (Inspect Element)
@@ -172,14 +176,30 @@ const App: React.FC = () => {
       addToast('Image too large. Max 5MB.', 'error');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
       setProfileImage(result);
-      addToast('Profile photo added!', 'success');
+      addToast('Profile photo added! You can now drag it to position.', 'success');
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    dragStart.current = { x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    setDragOffset({
+      x: e.clientX - dragStart.current.x,
+      y: e.clientY - dragStart.current.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
   };
 
   const handleTextSubmit = async () => {
@@ -257,7 +277,7 @@ const App: React.FC = () => {
       .join('\n');
 
     const photoHtml = (selectedTemplate === 'deloitte' && profileImage) 
-      ? `<div class="deloitte-photo-container"><img src="${profileImage}" /></div>` 
+      ? `<div class="deloitte-photo-container" style="transform: translate(${dragOffset.x}px, ${dragOffset.y}px)"><img src="${profileImage}" /></div>` 
       : '';
 
     printWindow.document.write(`
@@ -446,7 +466,15 @@ const App: React.FC = () => {
                       <button 
                         key={t.id}
                         onClick={() => setSelectedTemplate(t.id)}
-                        className={`p-5 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${selectedTemplate === t.id ? 'border-slate-900 bg-white shadow-xl translate-x-2' : 'border-slate-50 bg-white/50 hover:border-slate-200'}`}
+                        className={`p-5 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${
+                          selectedTemplate === t.id 
+                            ? t.id === 'deloitte' 
+                              ? 'border-green-600 bg-green-50 shadow-xl translate-x-2 ring-1 ring-green-200'
+                              : 'border-slate-900 bg-white shadow-xl translate-x-2' 
+                            : t.id === 'deloitte'
+                              ? 'border-green-100 bg-white hover:border-green-300'
+                              : 'border-slate-50 bg-white/50 hover:border-slate-200'
+                        }`}
                       >
                         <div className={`w-1 h-8 rounded-full ${t.preview}`} />
                         <div>
@@ -665,11 +693,20 @@ const App: React.FC = () => {
 
             {/* Resume Editor View */}
             <div className="lg:w-2/3 flex flex-col items-center">
-               <div className={`template-${selectedTemplate} w-full ${isBlurred ? 'security-blur' : ''}`}>
+               <div 
+                  className={`template-${selectedTemplate} w-full ${isBlurred ? 'security-blur' : ''}`}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+               >
                  <div className="resume-page-container">
                     {selectedTemplate === 'deloitte' && profileImage && (
-                      <div className="deloitte-photo-container">
-                          <img src={profileImage} alt="Profile" />
+                      <div 
+                        className="deloitte-photo-container cursor-move hover:ring-2 ring-green-400 transition-shadow"
+                        style={{ transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)` }}
+                        onMouseDown={handleMouseDown}
+                      >
+                          <img src={profileImage} alt="Profile" className="pointer-events-none" />
                       </div>
                     )}
                     <RichEditor content={editedHtml} onChange={setEditedHtml} />

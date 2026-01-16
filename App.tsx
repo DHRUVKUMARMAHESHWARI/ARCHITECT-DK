@@ -400,6 +400,14 @@ const App: React.FC = () => {
        // I will allow download even if upgrade fails, assuming they paid.
        addToast('Thank you for your support!', 'success');
      }
+     
+     // Log the download on server (Now non-blocking)
+     try {
+        await trackDownload(selectedTemplate);
+     } catch(e) {
+        console.error("Tracking failed", e);
+     }
+
      setShowDonationModal(false);
      
      // Trigger Download logic (Rerun export but bypass check? Or just copy paste download logic?)
@@ -917,6 +925,11 @@ const App: React.FC = () => {
         ))}
       </div>
       
+      {/* Footer */}
+      <footer className="py-8 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">
+        made bY Dhruv kumar maheshwari (DK)
+      </footer>
+
       <AuthModal 
         isOpen={showAuthModal} 
         onClose={() => setShowAuthModal(false)} 

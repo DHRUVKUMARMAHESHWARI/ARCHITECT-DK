@@ -7,7 +7,7 @@ import AuthModal from './components/AuthModal';
 import PremiumModal from './components/PremiumModal';
 import AdminDashboard from './components/AdminDashboard';
 import DonationModal from './components/DonationModal';
-import { trackDownload, upgradeToPremium } from './services/api';
+import { trackDownload, upgradeToPremium, getTemplateStats } from './services/api';
 import HeroAnimation from './components/HeroAnimation';
 
 const TEMPLATES: {id: TemplateId, name: string, description: string, preview: string}[] = [
@@ -112,6 +112,28 @@ const App: React.FC = () => {
   }, []);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [totalResumes, setTotalResumes] = useState(0);
+  const [templateStats, setTemplateStats] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getTemplateStats();
+        if (data.success) {
+           setTotalResumes(data.totalResumeCount);
+           setTemplateStats(data.stats);
+        }
+      } catch (e) {
+        console.error("Failed to load stats", e);
+      }
+    };
+    fetchStats();
+    
+    // Poll for live stats every 30s
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -689,6 +711,20 @@ const App: React.FC = () => {
 
             {/* Template Gallery Grid - Full Width */}
             <div className="mt-24 mb-20 animate-fade-up" style={{animationDelay: '0.5s'}}>
+
+              {/* Live Activity Banner */}
+              <div className="flex justify-center mb-12">
+                 <div className="bg-white px-6 py-2 rounded-full border border-slate-100 shadow-sm flex items-center gap-3 animate-bounce-slow">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                       <span className="text-slate-900">{totalResumes > 0 ? totalResumes.toLocaleString() : '...'}</span> resumes architected
+                    </span>
+                 </div>
+              </div>
+
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 px-4 gap-4">
                  <div>
                     <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Architecture Blueprints</h3>
@@ -736,6 +772,16 @@ const App: React.FC = () => {
                              {isHot && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>}
                           </div>
                           <p className="text-[10px] text-slate-400 font-bold leading-relaxed line-clamp-2">{t.description}</p>
+                          
+                          {/* Usage Stat */}
+                          <div className="mt-3 flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                             </svg>
+                             <span className="text-[9px] font-bold text-slate-500">
+                                {templateStats[t.id] ? `${templateStats[t.id]} used` : 'New Arrival'}
+                             </span>
+                          </div>
                         </div>
 
                         {/* Deloitte Image Action in Grid */}

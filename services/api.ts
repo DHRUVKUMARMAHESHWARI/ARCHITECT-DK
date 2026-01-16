@@ -47,6 +47,11 @@ export const trackDownload = async (templateId?: string) => {
   return response.data;
 };
 
+export const getTemplateStats = async () => {
+  const response = await api.get('/auth/stats');
+  return response.data;
+};
+
 export const upgradeToPremium = async (transactionId: string) => {
   const response = await api.post('/auth/upgrade', { transactionId });
   return response.data;

@@ -452,6 +452,30 @@ const App: React.FC = () => {
                         <div>
                           <div className="font-black text-[10px] text-slate-900 uppercase tracking-tight">{t.name}</div>
                           <p className="text-[9px] text-slate-400 font-bold uppercase truncate max-w-[200px]">{t.description}</p>
+                          
+                          {/* Deloitte Photo Upload in IDLE */}
+                          {t.id === 'deloitte' && selectedTemplate === 'deloitte' && (
+                             <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                                <input 
+                                  ref={profileImageInputRef}
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="hidden" 
+                                  onChange={handleProfileImageChange} 
+                                />
+                                <div className="flex gap-2 items-center">
+                                  <button
+                                      onClick={() => profileImageInputRef.current?.click()}
+                                      className="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-green-200 transition-colors"
+                                  >
+                                      {profileImage ? 'Change Photo' : 'Upload Photo'}
+                                  </button>
+                                  {profileImage && (
+                                     <span className="text-[9px] font-bold text-green-600">✓ Added</span>
+                                  )}
+                                </div>
+                             </div>
+                          )}
                         </div>
                       </button>
                     ))}
@@ -562,7 +586,7 @@ const App: React.FC = () => {
               </div>
 
               {selectedTemplate === 'deloitte' && (
-                <div class="bg-white p-8 rounded-[2.5rem] border border-green-100 shadow-sm">
+                <div className="bg-white p-8 rounded-[2.5rem] border border-green-100 shadow-sm">
                    <h3 className="text-[10px] font-black uppercase tracking-widest text-green-600 mb-4">Deloitte Template Actions</h3>
                    <input 
                       ref={profileImageInputRef}

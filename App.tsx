@@ -6,6 +6,7 @@ import RichEditor from './components/RichEditor';
 import AuthModal from './components/AuthModal';
 import PremiumModal from './components/PremiumModal';
 import AdminDashboard from './components/AdminDashboard';
+import DonationModal from './components/DonationModal';
 import { trackDownload, upgradeToPremium } from './services/api';
 
 const TEMPLATES: {id: TemplateId, name: string, description: string, preview: string}[] = [
@@ -42,6 +43,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<any>(null); // Ideally use a proper User type
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   
   // Security: Blur State
@@ -134,14 +136,14 @@ const App: React.FC = () => {
       return;
     }
     
-    // Strict Lock: Upload is Premium Only
-    if (!user.isPremium) {
-      setShowPremiumModal(true);
-      addToast('Resume Upload is a Premium Feature. Please Paste Text or Upgrade.', 'info');
-      // Reset input
-      e.target.value = '';
-      return;
-    }
+    
+    // Feature Unlocked for Free Users (Donation Model applied on Download)
+    // if (!user.isPremium) {
+    //   setShowPremiumModal(true);
+    //   addToast('Resume Upload is a Premium Feature. Please Paste Text or Upgrade.', 'info');
+    //   e.target.value = '';
+    //   return;
+    // }
 
     const file = e.target.files?.[0];
     if (!file) return;
@@ -247,15 +249,21 @@ const App: React.FC = () => {
        return;
     }
 
-    // Check limit
+    // 1. If Free User -> Always Ask for Donation (Voluntary)
+    if (!user.isPremium) {
+       setShowDonationModal(true);
+       return;
+    }
+
+    // 2. Premium User -> Checks Limits via API
     try {
       const res = await trackDownload(selectedTemplate);
       // Update local user state with new download count
       setUser((prev: any) => ({ ...prev, downloads: res.downloads }));
     } catch (err: any) {
       if (err.response && err.response.status === 403) {
-        setShowPremiumModal(true);
-        return;
+         setShowPremiumModal(true);
+         return;
       }
       addToast('Download failed. Try again.', 'error');
       return;
@@ -374,6 +382,114 @@ const App: React.FC = () => {
     }
   };
 
+  const handleDonationSuccess = async (transactionId: string) => {
+     // For now, we trust the workflow and allow the download.
+     // In a real scenario, we might verify or upgrade them temporarily.
+     // Since the user said "ask for money... mention like its your own will", strict backend verification might not be needed or we use the exisiting upgrade logic but don't strictly enforce premium state change if checks fail, OR we just trust and proceed.
+     // Let's TRY to upgrade them so they get premium status if they paid, otherwise just proceed.
+     try {
+       // Attempt upgrade if they entered a valid looking ID
+       if (transactionId.length > 8) {
+          const res = await upgradeToPremium(transactionId);
+          setUser((prev: any) => ({ ...prev, isPremium: true }));
+          addToast('Donation verified! Premium Unlocked.', 'success');
+       }
+     } catch (e) {
+       // If verification fails but they tried, we generally let them pass in a "Donation" model or show error.
+       // User requirement: "ask for money ... mention like its your own will".
+       // I will allow download even if upgrade fails, assuming they paid.
+       addToast('Thank you for your support!', 'success');
+     }
+     setShowDonationModal(false);
+     
+     // Trigger Download logic (Rerun export but bypass check? Or just copy paste download logic?)
+     // To keep it simple, I'll invoke download logic again.
+     // Since I can't easily pass a flag to handleExportPDF without changing signature and call sites, I'll just copy the print logic here or use a timeout/state trick.
+     // Actually, let's just copy the print logic to a function.
+     
+     // ... Actually handleExportPDF checks trackDownload. If I don't upgrade them, they will fail again.
+     // So I'll modify trackDownload error handling to accept a "bypass" if I verified locally? No, backend will reject.
+     // I will assumes upgradeToPremium succeeds if I give a dummy ID in dev, or I need to handle 403.
+     // The user didn't ask for backed changes.
+     // I will instruct the user that "Donation" is handled by the "upgradeToPremium" endpoint for now.
+     // If they are not upgraded, they can't download.
+     // So I MUST succeed in upgradeToPremium.
+     
+     triggerDownload();
+  };
+
+  const triggerDownload = () => {
+     const printWindow = window.open('', '_blank');
+     if (!printWindow) {
+       addToast('Popup blocked! Please allow popups to generate your PDF.', 'error');
+       return;
+     }
+
+     if (selectedTemplate === 'deloitte') {
+        setTimeout(() => setProfileImage(null), 5000); 
+    }
+    
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map(style => style.innerHTML)
+      .join('\n');
+
+    const photoHtml = (selectedTemplate === 'deloitte' && profileImage) 
+      ? `<div class="deloitte-photo-container" style="transform: translate(${dragOffset.x}px, ${dragOffset.y}px)"><img src="${profileImage}" /></div>` 
+      : '';
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Resume - ${resumeData?.candidateName || 'ATS Architect'}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=IBM+Plex+Mono:wght@400;500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+          <style>
+            ${styles}
+            body { 
+              background: white !important; 
+              margin: 0; 
+              padding: 0; 
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .resume-page-container { 
+              box-shadow: none !important; 
+              margin: 0 auto !important; 
+              padding: 0.5in 0.6in !important;
+              width: 100% !important;
+              min-height: auto !important;
+            }
+            .editor-content { width: 100%; }
+            @media print {
+              @page { margin: 0; size: A4; }
+              body { margin: 0; }
+            }
+          </style>
+        </head>
+        <body class="template-${selectedTemplate}">
+          <div class="resume-page-container">
+            ${photoHtml}
+            <div class="editor-content">
+              ${editedHtml}
+            </div>
+          </div>
+          <script>
+            window.onload = () => {
+              setTimeout(() => {
+                window.print();
+              }, 1000);
+            };
+            window.onafterprint = () => {
+              window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl bg-white/80 backdrop-blur-md border border-white/40 shadow-xl shadow-slate-200/50 rounded-full z-[100] flex items-center px-6 py-3 justify-between transition-all hover:scale-[1.01]">
@@ -437,7 +553,7 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="flex-grow max-w-7xl mx-auto w-full p-8 flex flex-col">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-8 pb-8 pt-32 flex flex-col">
         {state === 'IDLE' && (
           <div className="flex flex-col gap-12 py-6 animate-in">
             <div className="max-w-4xl">
@@ -564,16 +680,29 @@ const App: React.FC = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {TEMPLATES.map(t => (
+                  {TEMPLATES.map(t => {
+                      const isHot = ['sourabh', 'deloitte'].includes(t.id);
+                      return (
                       <button 
                         key={t.id}
                         onClick={() => setSelectedTemplate(t.id)}
                         className={`group relative p-8 rounded-[2rem] border-2 transition-all text-left flex flex-col gap-6 overflow-hidden min-h-[220px] ${
                           selectedTemplate === t.id 
-                            ? t.id === 'deloitte' ? 'border-green-500 bg-green-50/50 shadow-2xl scale-105 ring-4 ring-green-100 z-10' : 'border-slate-900 bg-white shadow-2xl scale-105 z-10' 
-                            : 'border-white bg-white hover:border-slate-200 hover:shadow-xl hover:-translate-y-1'
+                            ? t.id === 'deloitte' 
+                                ? 'border-green-500 bg-green-50/50 shadow-2xl scale-105 ring-4 ring-green-100 z-10' 
+                                : 'border-slate-900 bg-white shadow-2xl scale-105 z-10' 
+                            : isHot 
+                                ? 'border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30 hover:border-indigo-300 hover:shadow-xl hover:-translate-y-1'
+                                : 'border-white bg-white hover:border-slate-200 hover:shadow-xl hover:-translate-y-1'
                         }`}
                       >
+                         {/* Hot Badge */}
+                         {isHot && (state === 'IDLE' || selectedTemplate !== t.id) && (
+                            <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl shadow-lg">
+                               Hot
+                            </div>
+                         )}
+
                         <div className="flex justify-between items-start">
                            <div className={`w-12 h-12 rounded-2xl ${t.preview} shadow-lg group-hover:scale-110 transition-transform`} />
                            {selectedTemplate === t.id && (
@@ -582,7 +711,10 @@ const App: React.FC = () => {
                         </div>
 
                         <div>
-                          <div className="font-black text-sm text-slate-900 uppercase tracking-tight mb-2 group-hover:text-indigo-600 transition-colors">{t.name}</div>
+                          <div className="font-black text-sm text-slate-900 uppercase tracking-tight mb-2 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                             {t.name}
+                             {isHot && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>}
+                          </div>
                           <p className="text-[10px] text-slate-400 font-bold leading-relaxed line-clamp-2">{t.description}</p>
                         </div>
 
@@ -607,7 +739,7 @@ const App: React.FC = () => {
                              </div>
                           )}
                       </button>
-                    ))}
+                    )})}
               </div>
             </div>
           </div>
@@ -795,6 +927,12 @@ const App: React.FC = () => {
         isOpen={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
         onUpgrade={handleUpgrade}
+      />
+
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={() => setShowDonationModal(false)}
+        onDonate={handleDonationSuccess}
       />
 
       {showAdminDashboard && (

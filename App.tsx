@@ -161,8 +161,9 @@ const App: React.FC = () => {
         addToast('Architecture complete!', 'success');
         const fb = await getATSFeedback(result.rawText, jobDescription);
         setFeedback(fb);
-      } catch (err) {
-        addToast('Process failed. Try a different image or text.', 'error');
+      } catch (err: any) {
+        console.error("Resume Conversion Error:", err);
+        addToast(`Process failed: ${err.response?.data?.error || err.message || 'Unknown error'}`, 'error');
         setState('IDLE');
       }
     };

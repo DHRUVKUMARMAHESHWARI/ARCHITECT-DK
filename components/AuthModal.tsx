@@ -37,7 +37,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
 
   return (
     <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 w-[95%] max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">
           {isLogin ? 'Welcome Back' : 'Create Account'}
         </h2>

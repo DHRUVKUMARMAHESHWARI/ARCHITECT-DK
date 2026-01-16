@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "AIzaSyAM5sYAOjLUfA0hUKIjD8ycatbQGSMioaQ" });
+const ai = new GoogleGenAI({ apiKey: process.env.VITE_API_KEY || "" });
 
 const getResumeStructurePrompt = (jobDescription?: string) => `
     Convert the provided document (Image or PDF) into structured HTML for a resume.
@@ -34,7 +34,7 @@ const getResumeStructurePrompt = (jobDescription?: string) => `
 `;
 
 export async function convertResumeFile(base64Data: string, mimeType: string, jobDescription?: string) {
-  const model = "gemini-3-flash-preview";
+  const model = "gemini-2.5-flash";
   try {
     const response = await ai.models.generateContent({
       model,
@@ -68,7 +68,7 @@ export async function convertResumeFile(base64Data: string, mimeType: string, jo
 }
 
 export async function createResumeFromText(pastedText: string, jobDescription?: string) {
-  const model = "gemini-3-flash-preview";
+  const model = "gemini-2.5-flash";
   try {
     const response = await ai.models.generateContent({
       model,
@@ -95,7 +95,7 @@ export async function createResumeFromText(pastedText: string, jobDescription?: 
 }
 
 export async function improveResumeContent(currentHtml: string, instruction: string, jobDescription?: string) {
-  const model = "gemini-3-flash-preview";
+  const model = "gemini-2.5-flash";
   const prompt = `
     Update the following Resume HTML to address: "${instruction}".
     Target JD: ${jobDescription || 'None'}
@@ -111,7 +111,7 @@ export async function improveResumeContent(currentHtml: string, instruction: str
 }
 
 export async function reorderResumeSections(currentHtml: string, jobDescription: string) {
-  const model = "gemini-3-pro-preview";
+  const model = "gemini-2.5-flash";
   const prompt = `
     Analyze the following Resume HTML and the Target Job Description.
     Target JD: ${jobDescription}
@@ -139,7 +139,7 @@ export async function reorderResumeSections(currentHtml: string, jobDescription:
 }
 
 export async function getATSFeedback(resumeText: string, jobDescription?: string) {
-  const model = "gemini-3-flash-preview";
+  const model = "gemini-2.5-flash";
   const prompt = `Analyze resume text for ATS compatibility. Score 0-100. Text: ${resumeText}. JD: ${jobDescription || 'None'}`;
   try {
     const response = await ai.models.generateContent({

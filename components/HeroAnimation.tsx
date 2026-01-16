@@ -16,7 +16,7 @@ const HeroAnimation: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full max-w-md h-[500px] perspective-1000">
+    <div className="relative w-full max-w-md h-[350px] md:h-[500px] perspective-1000">
       <div className="relative w-full h-full transform transition-all duration-700 animate-float">
         
         {/* Container with Glassmorphism */}

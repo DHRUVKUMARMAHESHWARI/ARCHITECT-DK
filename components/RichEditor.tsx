@@ -277,7 +277,7 @@ const RichEditor: React.FC<RichEditorProps> = ({ content, onChange }) => {
       />
       
       {/* Help Indicator */}
-      <div className="mt-8 flex items-center justify-center gap-4 opacity-30 select-none pointer-events-none">
+      <div className="mt-8 hidden md:flex items-center justify-center gap-4 opacity-30 select-none pointer-events-none">
         <div className="h-[1px] flex-grow bg-slate-300"></div>
         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 whitespace-nowrap">
           Click any word to link a project

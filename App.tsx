@@ -47,6 +47,24 @@ const App: React.FC = () => {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   
+  // Mobile Scroll Effect (Dark Mode)
+  const [scrolledDark, setScrolledDark] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+       // Only on mobile
+       if (window.innerWidth < 768) {
+          if (window.scrollY > 150) {
+             setScrolledDark(true);
+          } else {
+             setScrolledDark(false);
+          }
+       }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   // Security: Blur State
   const [isBlurred, setIsBlurred] = useState(false);
 
@@ -61,12 +79,14 @@ const App: React.FC = () => {
   useEffect(() => {
     // 1. Block Context Menu (Inspect Element)
     const handleContextMenu = (e: MouseEvent) => {
+      if (import.meta.env.VITE_ENABLE_INSPECT === 'true') return;
       e.preventDefault();
       return false;
     };
 
     // 2. Block DevTools Shortcuts & Detect Screenshot Attempts
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (import.meta.env.VITE_ENABLE_INSPECT === 'true') return;
       // Block DevTools (F12, Ctrl+Shift+I/J/C, Cmd+Option+I/J/C)
       if (
         e.key === 'F12' || 
@@ -191,7 +211,6 @@ const App: React.FC = () => {
       }
     };
     reader.readAsDataURL(file);
-    reader.readAsDataURL(file);
   };
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,8 +262,9 @@ const App: React.FC = () => {
       addToast('Resume structured!', 'success');
       const fb = await getATSFeedback(result.rawText, jobDescription);
       setFeedback(fb);
-    } catch (err) {
-      addToast('Structure failed.', 'error');
+    } catch (err: any) {
+      console.error("Structure Error:", err);
+      addToast(`Structure failed: ${err.response?.data?.error || err.message}`, 'error');
       setState('IDLE');
     }
   };
@@ -523,11 +543,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl bg-white/80 backdrop-blur-md border border-white/40 shadow-xl shadow-slate-200/50 rounded-full z-[100] flex items-center px-6 py-3 justify-between transition-all hover:scale-[1.01]">
+    <div className={`min-h-screen flex flex-col font-sans overflow-x-hidden transition-colors duration-700 ${scrolledDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
+      <nav className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-5xl backdrop-blur-md border shadow-xl rounded-full z-[100] flex items-center px-4 md:px-6 py-2 md:py-3 justify-between transition-all hover:scale-[1.01] ${scrolledDark ? 'bg-slate-900/80 border-slate-700 shadow-slate-900/50' : 'bg-white/80 border-white/40 shadow-slate-200/50'}`}>
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setState('IDLE')}>
-          <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-black shadow-lg shadow-slate-900/30">A</div>
-          <span className="font-black text-lg tracking-tighter uppercase italic text-slate-900 hidden sm:block">ATS Architect</span>
+          <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-black shadow-lg shadow-slate-900/30 border border-white/10">A</div>
+          <span className={`font-black text-lg tracking-tighter uppercase italic hidden sm:block ${scrolledDark ? 'text-white' : 'text-slate-900'}`}>ATS Architect</span>
         </div>
         
         <div className="flex items-center gap-4">
@@ -588,18 +608,17 @@ const App: React.FC = () => {
       <main className="flex-grow max-w-7xl mx-auto w-full px-8 pb-8 pt-32 flex flex-col">
         {state === 'IDLE' && (
           <div className="flex flex-col gap-12 py-6 animate-in">
-             <div className="md:grid md:grid-cols-2 gap-12 items-center">
-                
-                {/* LEFT: Text Content */}
-                <div className="max-w-2xl animate-fade-up" style={{animationDelay: '0.1s'}}>
-                  <h1 className="text-[5rem] font-black text-slate-900 tracking-tighter leading-[0.85] mb-8">
-                    Your Career, <br /><span className="text-slate-300">Perfectly Re-Architected.</span>
-                  </h1>
-                  <p className="text-2xl text-slate-500 font-medium max-w-lg leading-relaxed mb-8">
-                    Upload your old resume image or PDF. We'll extract your history and let you switch between premium templates in one click.
-                  </p>
+             <div className="flex flex-col md:grid md:grid-cols-2 gap-12 items-center">
+                                {/* LEFT: Text Content */}
+                 <div className="max-w-2xl animate-fade-up order-1" style={{animationDelay: '0.1s'}}>
+                   <h1 className={`text-5xl md:text-[5rem] font-black tracking-tighter leading-[0.9] md:leading-[0.85] mb-6 md:mb-8 text-center md:text-left transition-colors duration-700 ${scrolledDark ? 'text-white' : 'text-slate-900'}`}>
+                     Your Career, <br /><span className="text-slate-300">Perfectly Re-Architected.</span>
+                   </h1>
+                   <p className="text-lg md:text-2xl text-slate-500 font-medium max-w-lg leading-relaxed mb-8 text-center md:text-left mx-auto md:mx-0">
+                     Upload your old resume image or PDF. We'll extract your history and let you switch between premium templates in one click.
+                   </p>
 
-                  <div className="flex gap-8 mt-4">
+                   <div className="flex gap-4 md:gap-8 mt-4 justify-center md:justify-start overflow-x-auto pb-2 md:pb-0">
                      <div className="flex flex-col gap-2">
                         <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Step 01</span>
                         <span className="font-bold text-slate-800 text-sm">Upload Old Resume</span>
@@ -618,14 +637,14 @@ const App: React.FC = () => {
 
                    {/* Value Proposition / Free vs Premium */}
                   <div className="grid grid-cols-2 gap-4 max-w-lg mt-8">
-                     <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm transition-all hover:scale-105 duration-300">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-2">Free Access</h3>
+                     <div className={`p-6 rounded-2xl border shadow-sm transition-all hover:scale-105 duration-300 ${scrolledDark ? 'bg-slate-800/50 border-slate-700 backdrop-blur-md' : 'bg-white border-slate-100'}`}>
+                        <h3 className={`text-xs font-black uppercase tracking-widest mb-2 ${scrolledDark ? 'text-slate-200' : 'text-slate-900'}`}>Free Access</h3>
                         <ul className="space-y-2">
-                           <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>Basic Templates</li>
-                           <li className="text-[10px] font-bold text-slate-500 flex items-center gap-2 relative overflow-hidden"><span className="w-1 h-1 bg-slate-300 rounded-full"></span>1 Download / Day</li>
+                           <li className={`text-[10px] font-bold flex items-center gap-2 ${scrolledDark ? 'text-slate-400' : 'text-slate-500'}`}><span className="w-1 h-1 bg-slate-300 rounded-full"></span>Basic Templates</li>
+                           <li className={`text-[10px] font-bold flex items-center gap-2 relative overflow-hidden ${scrolledDark ? 'text-slate-400' : 'text-slate-500'}`}><span className="w-1 h-1 bg-slate-300 rounded-full"></span>1 Download / Day</li>
                         </ul>
                      </div>
-                     <div className="p-6 bg-slate-900 rounded-2xl shadow-xl shadow-slate-200 transition-all hover:scale-105 duration-300">
+                     <div className={`p-6 rounded-2xl shadow-xl transition-all hover:scale-105 duration-300 ${scrolledDark ? 'bg-indigo-900/20 border border-indigo-500/30' : 'bg-slate-900 shadow-slate-200'}`}>
                         <h3 className="text-xs font-black uppercase tracking-widest text-white mb-2">Architect Premium</h3>
                         <ul className="space-y-2">
                            <li className="text-[10px] font-bold text-slate-400 flex items-center gap-2"><span className="w-1 h-1 bg-indigo-500 rounded-full"></span>Deloitte & Executive Templates</li>
@@ -637,7 +656,7 @@ const App: React.FC = () => {
                 </div>
 
                 {/* RIGHT: Hero Animation */}
-                <div className="hidden md:flex justify-end pr-8 animate-fade-up" style={{animationDelay: '0.3s'}}>
+                <div className="flex justify-center md:justify-end pr-0 md:pr-8 animate-fade-up order-2 md:order-2 w-full md:w-auto mb-12 md:mb-0" style={{animationDelay: '0.3s'}}>
                    <HeroAnimation />
                 </div>
             </div>
@@ -658,9 +677,9 @@ const App: React.FC = () => {
               </div>
 
               <div className="lg:col-span-7">
-                <div className="bg-white rounded-[3rem] shadow-2xl shadow-slate-200 border border-slate-100 overflow-hidden">
-                  <div className="flex bg-slate-50/50 p-3 gap-2">
-                    <button onClick={() => user ? setInputMode('file') : setShowAuthModal(true)} className={`flex-1 py-5 rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest transition-all relative overflow-hidden ${inputMode === 'file' ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-400'}`}>
+                <div className={`rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden transition-colors duration-500 border ${scrolledDark ? 'bg-slate-900/50 border-slate-700 backdrop-blur-sm' : 'bg-white border-slate-100 shadow-slate-200'}`}>
+                  <div className={`flex flex-col sm:flex-row p-2 md:p-3 gap-2 ${scrolledDark ? 'bg-slate-800/50' : 'bg-slate-50/50'}`}>
+                    <button onClick={() => user ? setInputMode('file') : setShowAuthModal(true)} className={`flex-1 py-4 md:py-5 rounded-xl md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-widest transition-all relative overflow-hidden ${inputMode === 'file' ? (scrolledDark ? 'bg-slate-700 text-white shadow-lg' : 'bg-white text-slate-900 shadow-lg') : 'text-slate-400'}`}>
                       {user && !user.isPremium && (
                         <div className="absolute top-2 right-2">
                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
@@ -677,14 +696,14 @@ const App: React.FC = () => {
                     {inputMode === 'file' ? (
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className="border-4 border-dashed border-slate-100 rounded-[2.5rem] py-24 bg-slate-50/30 hover:bg-white hover:border-indigo-300 transition-all cursor-pointer text-center group hover:scale-[1.01] duration-500 relative overflow-hidden"
+                        className={`border-4 border-dashed rounded-[2.5rem] py-12 md:py-24 transition-all cursor-pointer text-center group hover:scale-[1.01] duration-500 relative overflow-hidden ${scrolledDark ? 'border-slate-700 bg-slate-800/30 hover:bg-slate-800 hover:border-indigo-400' : 'border-slate-100 bg-slate-50/30 hover:bg-white hover:border-indigo-300'}`}
                       >
                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-indigo-50/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         
-                        <div className="w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-400 group-hover:text-indigo-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <div className={`w-24 h-24 rounded-[2rem] shadow-xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ${scrolledDark ? 'bg-slate-700' : 'bg-white'}`}>
+                          <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 transition-colors ${scrolledDark ? 'text-slate-400 group-hover:text-indigo-400' : 'text-slate-400 group-hover:text-indigo-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         </div>
-                        <p className="text-slate-900 font-black text-2xl tracking-tighter uppercase">Drop Old Resume Here</p>
+                        <p className={`font-black text-2xl tracking-tighter uppercase ${scrolledDark ? 'text-white' : 'text-slate-900'}`}>Drop Old Resume Here</p>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mt-3">PDF, Image, or Photo accepted</p>
                         <input ref={fileInputRef} type="file" onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                       </div>
@@ -694,7 +713,7 @@ const App: React.FC = () => {
                           value={pastedText}
                           onChange={(e) => setPastedText(e.target.value)}
                           placeholder="Paste all content..."
-                          className="w-full h-64 p-8 bg-slate-50 border-none rounded-[2rem] focus:ring-4 focus:ring-slate-100 outline-none text-slate-700 font-medium resize-none transition-all text-lg"
+                          className="w-full h-48 md:h-64 p-6 md:p-8 bg-slate-50 border-none rounded-[2rem] focus:ring-4 focus:ring-slate-100 outline-none text-slate-700 font-medium resize-none transition-all text-base md:text-lg"
                         />
                         <button 
                           onClick={handleTextSubmit}
@@ -746,10 +765,16 @@ const App: React.FC = () => {
                           selectedTemplate === t.id 
                             ? t.id === 'deloitte' 
                                 ? 'border-green-500 bg-green-50/50 shadow-2xl scale-105 ring-4 ring-green-100 z-10' 
-                                : 'border-slate-900 bg-white shadow-2xl scale-105 z-10' 
+                                : scrolledDark 
+                                    ? 'border-indigo-400 bg-slate-800 shadow-2xl scale-105 z-10'
+                                    : 'border-slate-900 bg-white shadow-2xl scale-105 z-10' 
                             : isHot 
-                                ? 'border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30 hover:border-indigo-300 hover:shadow-xl hover:-translate-y-1'
-                                : 'border-white bg-white hover:border-slate-200 hover:shadow-xl hover:-translate-y-1'
+                                ? scrolledDark 
+                                    ? 'border-slate-700 bg-slate-800/50 hover:border-indigo-400 hover:bg-slate-800'
+                                    : 'border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30 hover:border-indigo-300 hover:shadow-xl hover:-translate-y-1'
+                                : scrolledDark
+                                    ? 'border-slate-800 bg-slate-900 hover:border-slate-600 hover:bg-slate-800'
+                                    : 'border-white bg-white hover:border-slate-200 hover:shadow-xl hover:-translate-y-1'
                         }`}
                       >
                          {/* Hot Badge */}
@@ -767,11 +792,11 @@ const App: React.FC = () => {
                         </div>
 
                         <div>
-                          <div className="font-black text-sm text-slate-900 uppercase tracking-tight mb-2 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                          <div className={`font-black text-sm uppercase tracking-tight mb-2 group-hover:text-indigo-600 transition-colors flex items-center gap-2 ${scrolledDark && selectedTemplate !== t.id ? 'text-white' : 'text-slate-900'}`}>
                              {t.name}
                              {isHot && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>}
                           </div>
-                          <p className="text-[10px] text-slate-400 font-bold leading-relaxed line-clamp-2">{t.description}</p>
+                          <p className={`text-[10px] font-bold leading-relaxed line-clamp-2 ${scrolledDark ? 'text-slate-500 group-hover:text-slate-300' : 'text-slate-400'}`}>{t.description}</p>
                           
                           {/* Usage Stat */}
                           <div className="mt-3 flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">

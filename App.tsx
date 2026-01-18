@@ -65,6 +65,31 @@ const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
+  // Mobile Responsive Scale for Resume Editor
+  const [editorScale, setEditorScale] = useState(1);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      // Standard A4 is roughly 800-900px with padding in this design
+      // If screen is smaller than 850px, we scale down
+      if (width < 900) {
+         // Calculate scale: screen width / target width (900px seems safe for margins)
+         const newScale = (width - 32) / 900; // 32px for safe margin
+         setEditorScale(Math.min(newScale, 1));
+      } else {
+         setEditorScale(1);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
+  
   // Security: Blur State
   const [isBlurred, setIsBlurred] = useState(false);
 
@@ -75,6 +100,15 @@ const App: React.FC = () => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+        setContainerHeight(containerRef.current.scrollHeight);
+    }
+  }, [editedHtml, editorScale, selectedTemplate, profileImage]);
 
   useEffect(() => {
     // 1. Block Context Menu (Inspect Element)
@@ -967,12 +1001,13 @@ const App: React.FC = () => {
             {/* Resume Editor View */}
             <div className="lg:w-2/3 flex flex-col items-center">
                <div 
-                  className={`template-${selectedTemplate} w-full ${isBlurred ? 'security-blur' : ''}`}
+                  className={`template-${selectedTemplate} w-full ${isBlurred ? 'security-blur' : ''} transition-transform ease-out duration-200`}
+                  style={{ height: editorScale < 1 ? `${containerHeight * editorScale}px` : 'auto' }}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
                >
-                 <div className="resume-page-container relative">
+                 <div ref={containerRef} className="resume-page-container relative" style={{ transform: `scale(${editorScale})`, transformOrigin: 'top left', width: editorScale < 1 ? '900px' : '100%' }}>
                     {/* Visual Page Break Marker (Approx A4 bottom) */}
                     <div className="absolute top-[11.7in] left-0 right-0 border-b-2 border-dashed border-red-200 flex justify-center pointer-events-none z-50 opacity-50">
                         <span className="bg-slate-50 px-2 text-[9px] font-bold text-red-300 uppercase tracking-widest -mb-2">Page 1 End</span>

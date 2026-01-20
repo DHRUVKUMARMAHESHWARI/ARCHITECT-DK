@@ -209,7 +209,8 @@ const RichEditor: React.FC<RichEditorProps> = ({ content, onChange }) => {
       )}
 
       {/* Floating Toolbar */}
-      <div className="absolute -top-14 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 z-50">
+      {/* Floating Toolbar */}
+      <div className="sticky top-32 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 z-50 mb-4">
         <div className="flex items-center gap-1 p-1.5 bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-xl">
           <button 
             onMouseDown={(e) => { e.preventDefault(); execCommand('bold'); }}
@@ -262,6 +263,16 @@ const RichEditor: React.FC<RichEditorProps> = ({ content, onChange }) => {
           >
             •
           </button>
+
+          <div className="w-[1px] h-6 bg-slate-700/50 mx-1" />
+
+          <button 
+             onMouseDown={(e) => { e.preventDefault(); execCommand('justifyFull'); }}
+             className="w-10 h-10 hover:bg-white/10 rounded-xl transition-colors text-white flex items-center justify-center active:scale-90"
+             title="Justify Text"
+           >
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+           </button>
         </div>
       </div>
 
